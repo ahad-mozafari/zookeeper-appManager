@@ -55,7 +55,7 @@
             <argument>localhost</argument>
             <argument>/Clients/Client1</argument>
             <argument>output.txt</argument>
-            <argument>src/main/scripts/count.cmd</argument>
+            <argument>scripts/</argument>
           </arguments>
         </configuration>
       </plugin>

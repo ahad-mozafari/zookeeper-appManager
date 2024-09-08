@@ -34,7 +34,7 @@ public class AppTest
     public void testApp()
     {
         String[] arguments = new String[] { "localhost","/Clients/Client1",
-                "output.txt","src/main/scripts/count.cmd" };
+                "output.txt","scripts/" };
         Executor.main(arguments);
         assertTrue( true );
     }

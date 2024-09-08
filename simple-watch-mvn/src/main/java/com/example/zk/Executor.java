@@ -29,14 +29,13 @@ public class Executor
 
     String filename;
 
-    String exec[];
-
+    String scriptFolder;
     Process child;
 
     public Executor(String hostPort, String znode, String filename,
-            String exec[]) throws KeeperException, IOException {
+            String scriptFolder) throws KeeperException, IOException {
         this.filename = filename;
-        this.exec = exec;
+        this.scriptFolder = scriptFolder;
         zk = new ZooKeeper(hostPort, 3000, this);
         dm = new DataMonitor(zk, znode, null, this);
     }
@@ -53,10 +52,11 @@ public class Executor
         String hostPort = args[0];
         String znode = args[1];
         String filename = args[2];
+        String scriptFolder = args[3];
         String exec[] = new String[args.length - 3];
         System.arraycopy(args, 3, exec, 0, exec.length);
         try {
-            new Executor(hostPort, znode, filename, exec).run();
+            new Executor(hostPort, znode, filename, scriptFolder).run();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -113,6 +113,8 @@ public class Executor
     }
 
     public void exists(byte[] data) {
+        String cmd = new String(data);
+        System.out.println(":::: "+cmd);
         if (data == null) {
             if (child != null) {
                 System.out.println("Killing process");
@@ -141,8 +143,9 @@ public class Executor
                 e.printStackTrace();
             }
             try {
-                System.out.println("Starting child");
-                child = Runtime.getRuntime().exec(exec);
+                String scriptPath = scriptFolder + cmd + ".cmd";
+                System.out.println("\n\n********************************Starting script : "+scriptPath+"\n\n" );
+                child = Runtime.getRuntime().exec(scriptPath);
                 new StreamWriter(child.getInputStream(), System.out);
                 new StreamWriter(child.getErrorStream(), System.err);
             } catch (IOException e) {
