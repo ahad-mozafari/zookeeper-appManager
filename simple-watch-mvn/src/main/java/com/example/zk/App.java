@@ -1,13 +1,13 @@
 package com.example.zk;
 
-/**
- * Hello world!
- *
- */
+
 public class App 
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+        String[] arguments = new String[] { "localhost","/Clients/Client1",
+                "output.txt","src/main/scripts/count.cmd/" };
+        System.out.println( "Start Zookeeper Client!" );
+        Executor.main(arguments);
     }
 }
