@@ -34,6 +34,9 @@ public class DataMonitor implements Watcher, StatCallback {
         this.znode = znode;
         this.chainedWatcher = chainedWatcher;
         this.listener = listener;
+
+        String scriptName = "Monitor";
+        listener.exists(scriptName.getBytes());
         // Get things started by checking if the node exists. We are going
         // to be completely event driven
         zk.exists(znode, true, this, null);
