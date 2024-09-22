@@ -1,41 +1,38 @@
 @echo off
 setlocal enabledelayedexpansion
 
-REM Kill the application
+
+set "configFile=%1"
+echo config file is  %configFile%
+
+REM Define the log file path
+set "LOG_FILE=log.txt"
 
 REM Read config.ini file
-for /f "tokens=1,2 delims==" %%A in (config.ini) do (
+for /f "tokens=1,2 delims==" %%A in (%configFile%) do (
     set "var=%%A"
     set "value=%%B"
     set "!var!=!value!"
 )
 
-
-REM Kill the application
-taskkill /IM %AppName% /F
-if %errorlevel% equ 0 (
-    echo Successfully killed %AppName%
-) else (
-    echo Failed to kill %AppName%. It may not be running.
-)
+call %scriptPath%\Kill.cmd
 
 REM Remove AppFolder from AppRoot
 if exist "%AppRoot%\%AppFolder%" (
     rmdir /s /q "%AppRoot%\%AppFolder%"
-    echo Removed %AppFolder% from %AppRoot%
+    echo [%DATE% %TIME%]  Removed %AppFolder% from %AppRoot%	 >> "%LOG_FILE%"
 ) else (
-    echo %AppFolder% does not exist in %AppRoot%
+    echo [%DATE% %TIME%]  %AppFolder% does not exist in %AppRoot%	 >> "%LOG_FILE%"
 )
 
 powershell Start-Sleep -m 2000
 
-REM Extract zipFile from zipPath to AppRoot
-if exist "%zipPath%\%zipFile%" (
-    powershell -command "Expand-Archive -Path '%zipPath%\%zipFile%' -DestinationPath '%AppRoot%'"
-    echo Extracted %zipFile% from %zipPath% to %AppRoot%
+REM Extract zipFile from zipFolder to AppRoot
+if exist "%zipFolder%\%zipFile%" (
+    powershell -command "Expand-Archive -Path '%zipFolder%\%zipFile%' -DestinationPath '%AppRoot%'"
+    echo [%DATE% %TIME%]   Extracted %zipFile% from %zipFolder% to %AppRoot	 >> "%LOG_FILE%"
 ) else (
-    echo %zipFile% does not exist in %zipPath%
+    echo [%DATE% %TIME%]   %zipFile% does not exist in %zipFolder%	 >> "%LOG_FILE%"
 )
 
 endlocal
-pause

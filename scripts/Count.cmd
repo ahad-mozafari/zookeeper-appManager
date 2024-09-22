@@ -1,12 +1,15 @@
 @echo off
 setlocal enabledelayedexpansion
 
+
+set "configFile=%1"
+echo config file is  %configFile%
+
 set count=0
 
 :loop
 set /a count+=1
-set /p output=<output2.txt
-echo Count is %count% %output%
+echo Count is %count%
 powershell Start-Sleep -m 500
 
 goto loop
