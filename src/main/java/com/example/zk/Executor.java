@@ -30,12 +30,16 @@ public class Executor
     String filename;
 
     String scriptFolder;
+    String configFileName;
     Process child;
 
     public Executor(String hostPort, String znode, String filename,
-            String scriptFolder) throws KeeperException, IOException {
+            String scriptFolder, String configFileName) throws KeeperException, IOException {
         this.filename = filename;
         this.scriptFolder = scriptFolder;
+        this.configFileName = configFileName;
+        System.out.println("configFileName: " + configFileName);
+
         zk = new ZooKeeper(hostPort, 3000, this);
         dm = new DataMonitor(zk, znode, null, this);
     }
@@ -53,10 +57,9 @@ public class Executor
         String znode = args[1];
         String filename = args[2];
         String scriptFolder = args[3];
-        String exec[] = new String[args.length - 3];
-        System.arraycopy(args, 3, exec, 0, exec.length);
+        String configFileName = args[4];
         try {
-            new Executor(hostPort, znode, filename, scriptFolder).run();
+            new Executor(hostPort, znode, filename, scriptFolder,configFileName).run();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -143,8 +146,19 @@ public class Executor
                 e.printStackTrace();
             }
             try {
-                String scriptPath = scriptFolder + cmd + ".cmd";
-                System.out.println("\n\n********************************Starting script : "+scriptPath+"\n\n" );
+                String osName = System.getProperty("os.name").toLowerCase();
+                System.out.println("\n\nOS Name is " + osName);
+
+                String scriptPath;
+                if (osName.contains("win")) {
+                    scriptPath = scriptFolder + cmd + ".cmd " + configFileName ;
+                } else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix")) {
+                    scriptPath = scriptFolder + cmd + ".sh " + configFileName ;
+                } else {
+                    scriptPath = scriptFolder + cmd + ".sh " + configFileName ;
+                }
+
+                System.out.println("********************************Starting script : "+scriptPath+"\n\n" );
                 child = Runtime.getRuntime().exec(scriptPath);
                 new StreamWriter(child.getInputStream(), System.out);
                 new StreamWriter(child.getErrorStream(), System.err);
